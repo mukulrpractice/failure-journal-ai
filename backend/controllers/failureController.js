@@ -59,8 +59,46 @@ const deleteFailure = async (req, res) => {
   }
 };
 
+// UPDATE Failure
+const updateFailure = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { title, description, lesson, mood } = req.body;
+
+    const failure = await Failure.findByIdAndUpdate(
+      id,
+      {
+        title,
+        description,
+        lesson,
+        mood,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if (!failure) {
+      return res.status(404).json({
+        message: "Failure not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Failure Updated Successfully",
+      data: failure,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAllFailures,
   createFailure,
   deleteFailure,
+  updateFailure,
 };

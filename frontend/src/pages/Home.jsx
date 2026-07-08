@@ -11,6 +11,7 @@ function Home() {
     lesson: "",
     mood: "Neutral",
   });
+  const [editingId, setEditingId] = useState(null);
 
   // ================= FETCH ALL FAILURES =================
   const fetchFailures = async () => {
@@ -44,29 +45,42 @@ function Home() {
 
   // ================= SAVE FAILURE =================
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/failures",
+  try {
+    let response;
+
+    if (editingId) {
+      response = await axios.put(
+        `http://localhost:5000/api/failures/${editingId}`,
         formData
       );
 
       alert(response.data.message);
 
-      fetchFailures();
+      setEditingId(null);
+    } else {
+      response = await axios.post(
+        "http://localhost:5000/api/failures",
+        formData
+      );
 
-      setFormData({
-        title: "",
-        description: "",
-        lesson: "",
-        mood: "Neutral",
-      });
-    } catch (error) {
-      console.log(error);
-      alert("Something went wrong!");
+      alert(response.data.message);
     }
-  };
+
+    fetchFailures();
+
+    setFormData({
+      title: "",
+      description: "",
+      lesson: "",
+      mood: "Neutral",
+    });
+  } catch (error) {
+    console.log(error);
+    alert("Something went wrong!");
+  }
+};
 
   // ================= DELETE FAILURE =================
   const handleDelete = async (id) => {
@@ -90,6 +104,16 @@ function Home() {
     }
   };
 
+  const handleEdit = (failure) => {
+  setEditingId(failure._id);
+
+  setFormData({
+    title: failure.title,
+    description: failure.description,
+    lesson: failure.lesson,
+    mood: failure.mood,
+  });
+};
   return (
     <>
       <Navbar />
@@ -148,7 +172,9 @@ function Home() {
           <br />
           <br />
 
-          <button type="submit">Save Failure</button>
+          <button type="submit">
+  {editingId ? "Update Failure" : "Save Failure"}
+</button>
         </form>
 
         <hr />
@@ -182,11 +208,20 @@ function Home() {
 
               <br />
 
-              <button
-                onClick={() => handleDelete(failure._id)}
-              >
-                Delete
-              </button>
+              <div style={{ marginTop: "10px" }}>
+  <button
+    onClick={() => handleEdit(failure)}
+    style={{ marginRight: "10px" }}
+  >
+    Edit
+  </button>
+
+  <button
+    onClick={() => handleDelete(failure._id)}
+  >
+    Delete
+  </button>
+</div>
             </div>
           ))
         )}
