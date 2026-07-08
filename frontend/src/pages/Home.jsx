@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../services/api";
+
 import Navbar from "../components/Navbar";
+import FailureForm from "../components/FailureForm";
+import FailureList from "../components/FailureList";
 
 function Home() {
   const [failures, setFailures] = useState([]);
@@ -11,14 +14,13 @@ function Home() {
     lesson: "",
     mood: "Neutral",
   });
+
   const [editingId, setEditingId] = useState(null);
 
-  // ================= FETCH ALL FAILURES =================
+  // Fetch all failures
   const fetchFailures = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/failures"
-      );
+      const response = await API.get("/failures");
 
       setFailures(response.data);
     } catch (error) {
@@ -26,7 +28,7 @@ function Home() {
     }
   };
 
-  // ================= LOAD DATA =================
+  // Load data on page load
  useEffect(() => {
   const loadFailures = async () => {
     await fetchFailures();
@@ -34,8 +36,7 @@ function Home() {
 
   loadFailures();
 }, []);
-
-  // ================= HANDLE INPUT =================
+  // Handle form inputs
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -43,46 +44,43 @@ function Home() {
     });
   };
 
-  // ================= SAVE FAILURE =================
+  // Save or Update
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    let response;
+    try {
+      let response;
 
-    if (editingId) {
-      response = await axios.put(
-        `http://localhost:5000/api/failures/${editingId}`,
-        formData
-      );
+      if (editingId) {
+       response = await API.put(
+  `/failures/${editingId}`,
+  formData
+);
 
-      alert(response.data.message);
+        alert(response.data.message);
 
-      setEditingId(null);
-    } else {
-      response = await axios.post(
-        "http://localhost:5000/api/failures",
-        formData
-      );
+        setEditingId(null);
+      } else {
+       response = await API.post("/failures", formData);
 
-      alert(response.data.message);
+        alert(response.data.message);
+      }
+
+      fetchFailures();
+
+      setFormData({
+        title: "",
+        description: "",
+        lesson: "",
+        mood: "Neutral",
+      });
+    } catch (error) {
+      console.log(error);
+      alert("Something went wrong!");
     }
+  };
 
-    fetchFailures();
-
-    setFormData({
-      title: "",
-      description: "",
-      lesson: "",
-      mood: "Neutral",
-    });
-  } catch (error) {
-    console.log(error);
-    alert("Something went wrong!");
-  }
-};
-
-  // ================= DELETE FAILURE =================
+  // Delete Failure
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this failure?"
@@ -91,29 +89,29 @@ function Home() {
     if (!confirmDelete) return;
 
     try {
-      const response = await axios.delete(
-        `http://localhost:5000/api/failures/${id}`
-      );
+      const response = await API.delete(`/failures/${id}`);
 
       alert(response.data.message);
 
       fetchFailures();
     } catch (error) {
       console.log(error);
-      alert("Delete Failed");
+      alert("Delete failed");
     }
   };
 
+  // Edit Failure
   const handleEdit = (failure) => {
-  setEditingId(failure._id);
+    setEditingId(failure._id);
 
-  setFormData({
-    title: failure.title,
-    description: failure.description,
-    lesson: failure.lesson,
-    mood: failure.mood,
-  });
-};
+    setFormData({
+      title: failure.title,
+      description: failure.description,
+      lesson: failure.lesson,
+      mood: failure.mood,
+    });
+  };
+
   return (
     <>
       <Navbar />
@@ -125,106 +123,18 @@ function Home() {
 
         <hr />
 
-        <h2>Add New Failure</h2>
+        <FailureForm
+          formData={formData}
+          handleChange={handleChange}
+          handleSubmit={handleSubmit}
+          editingId={editingId}
+        />
 
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="title"
-            placeholder="Title"
-            value={formData.title}
-            onChange={handleChange}
-          />
-
-          <br />
-          <br />
-
-          <textarea
-            name="description"
-            placeholder="Description"
-            value={formData.description}
-            onChange={handleChange}
-          />
-
-          <br />
-          <br />
-
-          <textarea
-            name="lesson"
-            placeholder="Lesson Learned"
-            value={formData.lesson}
-            onChange={handleChange}
-          />
-
-          <br />
-          <br />
-
-          <select
-            name="mood"
-            value={formData.mood}
-            onChange={handleChange}
-          >
-            <option>Sad</option>
-            <option>Neutral</option>
-            <option>Motivated</option>
-          </select>
-
-          <br />
-          <br />
-
-          <button type="submit">
-  {editingId ? "Update Failure" : "Save Failure"}
-</button>
-        </form>
-
-        <hr />
-
-        <h2>All Failures</h2>
-
-        {failures.length === 0 ? (
-          <p>No failures added yet.</p>
-        ) : (
-          failures.map((failure) => (
-            <div
-              key={failure._id}
-              style={{
-                border: "1px solid gray",
-                padding: "15px",
-                marginTop: "15px",
-                borderRadius: "10px",
-              }}
-            >
-              <h3>{failure.title}</h3>
-
-              <p>{failure.description}</p>
-
-              <p>
-                <strong>Lesson:</strong> {failure.lesson}
-              </p>
-
-              <p>
-                <strong>Mood:</strong> {failure.mood}
-              </p>
-
-              <br />
-
-              <div style={{ marginTop: "10px" }}>
-  <button
-    onClick={() => handleEdit(failure)}
-    style={{ marginRight: "10px" }}
-  >
-    Edit
-  </button>
-
-  <button
-    onClick={() => handleDelete(failure._id)}
-  >
-    Delete
-  </button>
-</div>
-            </div>
-          ))
-        )}
+        <FailureList
+          failures={failures}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
       </div>
     </>
   );
