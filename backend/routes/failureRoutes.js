@@ -1,20 +1,21 @@
 const express = require("express");
-
 const router = express.Router();
 
 const {
   getAllFailures,
   createFailure,
-  deleteFailure,
   updateFailure,
+  deleteFailure,
 } = require("../controllers/failureController");
 
-router.get("/", getAllFailures);
+const { protect } = require("../middleware/authMiddleware");
 
-router.post("/", createFailure);
+router.get("/", protect, getAllFailures);
 
-router.delete("/:id", deleteFailure);
+router.post("/", protect, createFailure);
 
-router.put("/:id", updateFailure);
+router.put("/:id", protect, updateFailure);
+
+router.delete("/:id", protect, deleteFailure);
 
 module.exports = router;

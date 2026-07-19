@@ -1,5 +1,7 @@
 require("dotenv").config();
 
+const aiRoutes = require("./routes/aiRoutes");
+const authRoutes = require("./routes/authRoutes");
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
@@ -20,6 +22,8 @@ app.use(
 app.use(express.json());
 
 app.use("/api/failures", failureRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to Failure Journal Backend");
