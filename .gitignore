@@ -25,6 +25,10 @@ Thumbs.db
 
 # Temporary files
 *.tmp
+*.temp
 
 # Coverage reports
 coverage/
+
+# Cache
+.cache/
