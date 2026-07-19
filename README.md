@@ -70,7 +70,7 @@ Failure Journal AI is a full-stack MERN application that helps users record fail
 
 ---
 
-# 🛠 Tech Stack
+# Tech Stack
 
 ## Frontend
 
@@ -240,6 +240,6 @@ Savitribai Phule Pune University
 
 ---
 
-# 📄 License
+# License
 
 This project is created for educational and portfolio purposes.
