@@ -2,6 +2,10 @@
 
 > **Turn Every Failure into Your Next Success**
 
+ **Live Demo:** https://failure-journal-ai.netlify.app
+
+ **GitHub Repository:** https://github.com/mukulrpractice/failure-journal-ai
+
 Failure Journal AI is a full-stack MERN application that helps users record failures, reflect on lessons learned, track personal growth, and receive AI-powered insights to improve continuously.
 
 ---
@@ -97,6 +101,12 @@ Failure Journal AI is a full-stack MERN application that helps users record fail
 * Groq API
 * Llama 3.3 70B Versatile
 
+## Deployment
+
+- Netlify (Frontend)
+- Render (Backend)
+- MongoDB Atlas
+
 ---
 
 # Project Structure
@@ -156,7 +166,7 @@ Create a `.env` file inside the **backend** folder.
 ```env
 PORT=5000
 
-MONGO_URI=YOUR_MONGODB_CONNECTION_STRING
+MONGODB_URI=YOUR_MONGODB_CONNECTION_STRING
 
 JWT_SECRET=YOUR_SECRET_KEY
 
@@ -235,10 +245,16 @@ npm run dev
 
 **Mukul Rane**
 
-Final Year Computer Engineering Student
-Savitribai Phule Pune University
+Final Year B.E. Computer Engineering
 
+Savitribai Phule Pune University
 ---
+
+# Note
+
+This project is deployed using the Render Free Tier.
+
+If the backend has been inactive for some time, the first request may take around **30–60 seconds** while the server wakes up.
 
 # License
 
